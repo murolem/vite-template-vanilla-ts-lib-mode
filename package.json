@@ -1,6 +1,6 @@
 {
   "name": "repo-name",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "postinstall": "npx commitizen init cz-conventional-changelog --save-dev --save-exact --force",
