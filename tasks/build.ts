@@ -1,6 +1,6 @@
 import { build, UserConfig, UserConfigFn } from 'vite';
 import fs from 'fs';
-import viteConfig from '../vite.config.js';
+import viteConfig from '../vite.config';
 import { program as argsUtil } from 'commander';
 import Logger from '@aliser/logger';
 const logger = new Logger('build-task');
@@ -81,11 +81,13 @@ async function runBuild(viteConfig: UserConfig, sourceFilePath: string, {
         // here watcher is created
         // it will automatically rebuild every time a change occures in given paths
         // it will not resolve
-        await build(viteConfig);
+        await build(viteConfig)
+            .catch(err => logError('error', err, { throwErr: true }));
     } else {
         logInfo('starting build...');
 
-        await build(viteConfig);
+        await build(viteConfig)
+            .catch(err => logError('error', err, { throwErr: true }));
 
         logInfo('build done!');
     }
