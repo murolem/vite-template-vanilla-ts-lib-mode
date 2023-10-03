@@ -45,6 +45,7 @@ export default defineConfig(({ mode }) => {
             // }),
         ],
         build: {
+            target: 'esnext',
             minify: false,
             emptyOutDir: false,
             lib: {
