@@ -7,9 +7,13 @@ import Logger from '@aliser/logger';
 const { logInfo, logError } = new Logger('vite-config');
 
 export default defineConfig(({ mode }) => {
-    const isConfigUnspecified = ['development', 'production'].includes(mode);
+    const isConfigUnspecified = ['development', 'production', 'test'].includes(mode);
     if (isConfigUnspecified) {
-        return {};
+        return {
+            plugins: [
+                tsconfigPaths()
+            ]
+        };
     }
 
     const pathToSourceFile = mode;
