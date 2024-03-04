@@ -6,13 +6,19 @@ Note: it's in no way a refined and robust setup, but it's enough to get most of 
 
 # Usage
 
-1. Install using "XXXXXXXXXXXX".
+1. Install using:
+
+```text
+degit murolem/vite-template-vanilla-ts-lib-mode my-new-project
+```
+
+This will clone the repo, but without `.git` folder (=no repo history).
+
+Or you can just clone the repo the regular way.
 
 2. Go to `package.json`, change the name, set the version to `0.0.0` (or whatever you prefer).
 
-3. Delete `.git` folder.
-
-4. Configure the `.github` actions however you like. By default, it uses `release-please-action@v3` to increment the package version based on `cz-conventional-changelog` commits, creating pull requested on commits that increment the version.
+3. Configure the `.github` actions however you like. By default, it uses `release-please-action@v3` to increment the package version based on `cz-conventional-changelog` commits, creating pull requested on commits that increment the version.
    The latter must be enabled in your project repo settings → Actions → General → Workflow permissions → «Allow GitHub Actions to create and approve pull requests».
 
 # What's inside
