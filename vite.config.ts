@@ -29,6 +29,8 @@ export default defineConfig(({ mode }) => {
     return {
         plugins: [
             tsconfigPaths(),
+            // uncomment this to add arbitrary text to the output
+            // in this case, it makes the resulting lib runnable as a bookmarklet
             // {
             //     name: 'vite-plugin-append-text',
             //     generateBundle(options, bundle) {
