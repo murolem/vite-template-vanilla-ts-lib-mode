@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.3.0](https://github.com/murolem/vite-template-vanilla-ts-lib-mode/compare/v1.2.0...v1.3.0) (2024-03-05)
+
+
+### Features
+
+* better .gitignore ([697788a](https://github.com/murolem/vite-template-vanilla-ts-lib-mode/commit/697788a4fc8c024c62640ad47cd41c4e2d53e6c8))
+* tsconfig param changes, docs ([13c2d3e](https://github.com/murolem/vite-template-vanilla-ts-lib-mode/commit/13c2d3e642d760f310998bab21dbb5122e60ce83))
+
 ## [1.2.0](https://github.com/murolem/vite-template-vanilla-ts-lib-mode/compare/v1.1.0...v1.2.0) (2024-01-18)
 
 
