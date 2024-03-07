@@ -16,9 +16,9 @@ This will clone the repo, but without `.git` folder (=no repo history).
 
 Or you can just clone the repo the regular way.
 
-2. Go to `package.json`, change the name, set the version to `0.0.0` (or whatever you prefer).
+1. Go to `package.json`, set the package name, change the version (if needed).
 
-3. Configure the `.github` actions however you like. By default, it uses `release-please-action@v3` to increment the package version based on `cz-conventional-changelog` commits, creating pull requested on commits that increment the version.
+2. Configure the `.github` actions however you like. By default, it uses `release-please-action@v3` to increment the package version based on `cz-conventional-changelog` commits, creating pull requested on commits that increment the version.
    The latter must be enabled in your project repo settings → Actions → General → Workflow permissions → «Allow GitHub Actions to create and approve pull requests».
 
 # What's inside
