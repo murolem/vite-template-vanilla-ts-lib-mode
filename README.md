@@ -9,7 +9,7 @@ Note: it's in no way a refined and robust setup, but it's enough to get most of 
 1. Install using:
 
 ```text
-degit murolem/vite-template-vanilla-ts-lib-mode my-new-project
+npx degit murolem/vite-template-vanilla-ts-lib-mode my-new-project
 ```
 
 This will clone the repo, but without `.git` folder (=no repo history).
