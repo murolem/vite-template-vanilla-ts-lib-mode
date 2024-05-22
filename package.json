@@ -7,7 +7,7 @@
     "postinstall": "npx commitizen init cz-conventional-changelog --save-dev --save-exact --force",
     "build": "concurrently --passthrough-arguments --kill-others-on-fail \"npm:build:*(!watch) -- {@}\" --",
     "build:index": "npm run build-task -- ./src/index.ts",
-    "build-task": "vite-node ./tasks/build.ts -- ",
+    "build-task": "vite-node --config vite-node.config.ts ./tasks/build.ts -- ",
     "sendit": "npm run build && npm run add && npm run commit && npm run push",
     "add": "git add .",
     "commit": "cz",
