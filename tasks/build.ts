@@ -1,10 +1,20 @@
-import { build, UserConfig, UserConfigFn } from 'vite';
+import { build, InlineConfig, UserConfig, UserConfigFn } from 'vite';
 import fs from 'fs';
 import viteConfig from '../vite.config';
 import { program as argsUtil } from 'commander';
 import Logger from '@aliser/logger';
 const logger = new Logger('build-task');
 const { logDebug, logInfo, logWarn, logError } = logger;
+
+/**
+ * This script handles the building of individual source files into resulting
+ * scripts in lib mode.
+ * 
+ * It takes in paths to the source files and invokes the vite build manually.
+ * 
+ * For watch mode, the script must be run using a concurrent runner. 
+ * And only one build source is supported in this mode.
+ */
 
 // CONFIGURATION
 /** what paths to watch in watch mode */
@@ -15,58 +25,54 @@ const pathsToWatch = [
 
 
 // SCRIPT
-const sourceFilePaths: string[] = [];
+logInfo('starting build script...');
+
+const sourcesToBuildRelPaths: string[] = [];
 argsUtil
     .option('-w', 'watch mode')
     .argument('[source-file-paths...]', 'source file paths')
-    .action((sourceFilePathsUntyped, options, command) => {
-        if (!Array.isArray(sourceFilePathsUntyped))
-            logError('values are not an array', sourceFilePathsUntyped, { throwErr: true });
-
-        const result = sourceFilePathsUntyped as string[];
-        logInfo(`given source file paths: \n${result.join(', ')}`,);
+    .action((sourceFilePaths, options, command) => {
+        const result = sourceFilePaths as string[];
         if (result.length === 0) {
             logError('no source file paths specified', { throwErr: true });
-        } else {
-            sourceFilePaths.push(...result);
         }
+
+        sourcesToBuildRelPaths.push(...result);
+
     });
 
-const argsUtilParsed = argsUtil.parse();
-logInfo(`parsed source file paths: \n${sourceFilePaths.join(', ')}`,);
+const args = argsUtil.parse();
+const options = args.opts();
+const watchModeEnabled = options['w'];
 
-// check if builds paths do exist
-const nonExistentPaths = sourceFilePaths.filter(filePath => !fs.existsSync(filePath));
-if (nonExistentPaths.length > 0) {
-    if (nonExistentPaths.length === 1) {
-        logError(`build path does not exists: ${nonExistentPaths[0]}`, { throwErr: true });
-    } else {
-        logError(`build paths do not exist`, nonExistentPaths, { throwErr: true });
-    }
+if (sourcesToBuildRelPaths.length > 1 && watchModeEnabled) {
+    logError("cannot build multiple source when in watch mode", { throwErr: true });
 }
 
-const options = argsUtilParsed.opts();
-const watchMode = options['w'];
+logInfo(`sources to build (${sourcesToBuildRelPaths.length}): \n` + sourcesToBuildRelPaths.join('\n'));
 
-const getViteConfig = (mode: string) => (viteConfig as UserConfigFn)({
-    mode,
-    command: 'build'
-}) as UserConfig;
+// check if the source builds paths do exist
+const nonExistentPaths = sourcesToBuildRelPaths.filter(filePath => !fs.existsSync(filePath));
+if (nonExistentPaths.length > 0) {
+    logError('not all sources exist: \n' + nonExistentPaths.join('\n'), { throwErr: true });
+}
 
-const loggersByPrefix: Record<string, Logger> = {}
-async function runBuild(viteConfig: UserConfig, sourceFilePath: string, {
-    watchMode = false
-}) {
-    const prefix = sourceFilePath;
+// ==========
 
-    if (!loggersByPrefix[prefix])
-        loggersByPrefix[prefix] = logger.cloneAndAppendPrefix(prefix);
-    const loggerBySourceFilePath = loggersByPrefix[prefix];
-    const { logDebug, logInfo, logWarn, logError } = loggerBySourceFilePath;
+for (const sourceRelPath of sourcesToBuildRelPaths) {
+    await runBuild(sourceRelPath);
+}
 
-    if (watchMode) {
-        logInfo('starting build in watch mode...');
+async function runBuild(sourceRelPath: string) {
+    const { logInfo, logError } = logger.cloneAndAppendPrefix(sourceRelPath);
+    const viteConfig: InlineConfig = getViteConfig(sourceRelPath);
+    // this disables vite from getting a config from the project folder,
+    // messing up the build process (since we getting the config ourselves).
+    viteConfig.configFile = false;
 
+    logInfo('building...');
+
+    if (watchModeEnabled) {
         // if vite config build option is undefined, 
         // create an empty object to hold some values later
         if (!viteConfig.build)
@@ -78,23 +84,25 @@ async function runBuild(viteConfig: UserConfig, sourceFilePath: string, {
             include: pathsToWatch
         }
 
-        // here watcher is created
-        // it will automatically rebuild every time a change occures in given paths
-        // it will not resolve
+        // run the build indefinitely
         await build(viteConfig)
             .catch(err => logError('error', err, { throwErr: true }));
     } else {
-        logInfo('starting build...');
-
         await build(viteConfig)
             .catch(err => logError('error', err, { throwErr: true }));
 
-        logInfo('build done!');
+        logInfo('build complete!');
     }
 }
 
-for (const buildMode of sourceFilePaths) {
-    const viteConfig = getViteConfig(buildMode);
-
-    await runBuild(viteConfig, buildMode, { watchMode });
+/**
+ * Generates a vite config for the specified build source.
+ * @param sourceRelPath build source.
+ * @returns vite config.
+ */
+function getViteConfig(sourceRelPath: string) {
+    return (viteConfig as UserConfigFn)({
+        mode: sourceRelPath,
+        command: 'build'
+    }) as UserConfig;
 }

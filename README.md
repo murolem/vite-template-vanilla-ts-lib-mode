@@ -2,7 +2,7 @@
 
 A vanilla typescript vite template using lib mode with support for multiple entries.
 
-Note: it's in no way a refined and robust setup, but it's enough to get most of my simple projects running.
+Note: it's in no way a refined and robust setup, but it's enough to get most of my projects running.
 
 # Usage
 
